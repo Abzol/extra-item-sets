@@ -1,7 +1,7 @@
 {
-  "id": "com.example.my_mod",
-  "name": "My Mod",
-  "version": "1.0.0",
-  "author": "You",
-  "description": "An example Dusklight mod"
+  "id": "st.fluffie.extrabuttons",
+  "name": "Extra Buttons",
+  "version": "0.1.0",
+  "author": "Olivia!!",
+  "description": "Adds a second set of equipped items, swappable to using R+Z."
 }

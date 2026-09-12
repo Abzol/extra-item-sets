@@ -72,30 +72,18 @@ DEFINE_HOOK(&daAlink_c::midnaTalkTrigger, MidnaTalk); // trigger for talking to 
 
 /* functions that run before the original game code need to return a HookAction */
 static HookAction on_set_select_item_force_pre(ModContext*, void* args, void*, void*) {
-    dMenu_Ring_c *pMenuRing = static_cast<dMenu_Ring_c*>(args); 
-    if (pMenuRing->field_0x6b8[0] == 0xFF) {
-        pMenuRing->field_0x6b8[0] = dComIfGs_getMixItemIndex(0);
-    }
-    if (pMenuRing->field_0x6b8[1] == 0xFF) {
+    dMenu_Ring_c *pMenuRing = mods::arg<dMenu_Ring_c*>(args, 0);
+    int i_idx = mods::arg<int>(args, 1);
+    if (i_idx == 0) {
         pMenuRing->field_0x6b8[1] = dComIfGs_getMixItemIndex(1);
-    }
-    if (pMenuRing->field_0x6b4[0] == 0xFF) {
-        pMenuRing->field_0x6b4[0] = dComIfGs_getSelectItemIndex(0);
-    }
-    if (pMenuRing->field_0x6b4[1] == 0xFF) {
         pMenuRing->field_0x6b4[1] = dComIfGs_getSelectItemIndex(1);
+    } else if (i_idx == 1) {
+        pMenuRing->field_0x6b8[0] = dComIfGs_getMixItemIndex(0);
+        pMenuRing->field_0x6b4[0] = dComIfGs_getSelectItemIndex(0);
     }
     return HOOK_CONTINUE; // means continue with the original function
 }
  
-/* functions that run after the original function return void */
-static void on_set_select_item_force_post(ModContext*, void* args, void*, void*) {
-    dMenu_Ring_c *pMenuRing = static_cast<dMenu_Ring_c*>(args); 
-    pMenuRing->field_0x6b4[0] = 0xFF;
-    pMenuRing->field_0x6b8[1] = 0xFF;
-    pMenuRing->field_0x6b4[0] = 0xFF;
-    pMenuRing->field_0x6b8[1] = 0xFF;
-}
 
 /* this is the core function that actually performs the swap */
 void swapItems() {
@@ -114,7 +102,7 @@ void swapItems() {
 /* the first argument to args is a pointer to the caller. */
 /* static_cast it to whatever you know it is lets you access internal members */
 static void ring_checkDoSwapItems(ModContext*, void* args, void*, void*) {
-    dMenu_Ring_c *pMenuRing = static_cast<dMenu_Ring_c*>(args); 
+    dMenu_Ring_c *pMenuRing = mods::arg<dMenu_Ring_c*>(args, 0);
     if (mDoCPd_c::getHoldR(PAD_1) && mDoCPd_c::getTrigZ(PAD_1)) {
         /* mSelectItemSlideElapsed informs us if an equip animation is playing */
         /* swapping sets while an item is moving can cause issues, so we cancel if it is. */
@@ -180,11 +168,6 @@ MOD_EXPORT ModResult mod_initialize(ModError* error) {
     result = mods::hook::add_pre<SetSelectItemForce>(svc_hook, on_set_select_item_force_pre);
     if (result != MOD_OK) {
         svc_log->error(mod_ctx, "failed to install on_select_item_force_pre!");
-        return result;
-    }
-    result = mods::hook::add_post<SetSelectItemForce>(svc_hook, on_set_select_item_force_post);
-    if (result != MOD_OK) {
-        svc_log->error(mod_ctx, "failed to install on_select_item_force_post!");
         return result;
     }
     result = mods::hook::add_pre<KeyWaitProc>(svc_hook, checkDoSwapItems);

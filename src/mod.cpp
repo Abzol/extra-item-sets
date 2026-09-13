@@ -83,7 +83,7 @@ static HookAction on_set_select_item_force_pre(ModContext*, void* args, void*, v
     }
     return HOOK_CONTINUE; // means continue with the original function
 }
- 
+
 
 /* this is the core function that actually performs the swap */
 void swapItems() {
@@ -98,6 +98,7 @@ void swapItems() {
         mod_data.mod_comboItems[i] = mixitem;
     }
     Z2GetAudioMgr()->seStart(Z2SE_SY_ITEM_SET_X, NULL, 0, 0, 1.0f, 1.0f, -1.0f, -1.0f, 0);
+    svc_save->set_blob(mod_ctx, "mod_save_data", &mod_data, sizeof(mod_data));
 }
 /* the first argument to args is a pointer to the caller. */
 /* static_cast it to whatever you know it is lets you access internal members */
@@ -166,10 +167,15 @@ static void loadBlob(ModContext* ctx, uint32_t slot, void* udata) {
 }
 
 static void storeBlob(ModContext* ctx, uint32_t slot, void* udata) {
-    char buf[25];
-    sprintf(buf, "blob: %d", sizeof(mod_data));
-    svc_log->info(mod_ctx, buf);
-    svc_save->set_blob(mod_ctx, "mod_save_data", &mod_data, sizeof(mod_data));
+    ModResult rv = svc_save->set_blob(mod_ctx, "mod_save_data", &mod_data, sizeof(mod_data));
+    if (rv == MOD_UNAVAILABLE) {
+        svc_log->error(mod_ctx, "blob unavailable!!!");
+    }
+    if (rv == MOD_OK) {
+        char buf[25];
+        sprintf(buf, "blob: %d", sizeof(mod_data));
+        svc_log->info(mod_ctx, buf);
+    }
     return;
 }
 } //namespace

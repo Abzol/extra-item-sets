@@ -146,7 +146,32 @@ ModResult build_panel(ModContext*, UiElementHandle panel, void*, ModError*) {
 
     return MOD_OK;
 }
+
+void apply_state(mod_save_data state){
+    mod_data = state;
+}
+
+static void makeBlob(ModContext* ctx) {
+    return;
+}
+
+static void loadBlob(ModContext* ctx) {
+    mod_save_data loaded{};
+    size_t loadedSize = sizeof(loaded);
+    if (svc_save->get_blob(mod_ctx, "mod_save_data", &loaded, &loadedSize) == MOD_OK &&
+        loadedSize == sizeof(loaded)) {
+        apply_state(loaded);
+    }
+    return;
+}
+
+static void storeBlob(ModContext* ctx) {
+    svc_save->set_blob(mod_ctx, "mod_save_data", &mod_data, sizeof(mod_data));
+    return;
+}
 } //namespace
+
+
  
 /* These bits are what dusklight runs */
 extern "C" {
@@ -184,6 +209,8 @@ MOD_EXPORT ModResult mod_initialize(ModError* error) {
     panelDesc.build = build_panel;
     svc_ui->register_mods_panel(mod_ctx, &panelDesc);
 
+    svc_save->observe_saves(mod_ctx, makeBlob, loadBlob, storeBlob, NULL, NULL);
+
     return MOD_OK;
 }
 /* mod_update runs every frame */
@@ -192,7 +219,13 @@ MOD_EXPORT ModResult mod_update(ModError*) {
 }
 /* mod_shutdown runs when the game exits or the mod is disabled by the user */
 /* if you dont disable your code here it will *continue* to run even when disabled */
+#define UNINSTALL_HOOK(defined_hook) mods::hook::uninstall<defined_hook>(svc_hook);
+
 MOD_EXPORT ModResult mod_shutdown(ModError*) {
+    UNINSTALL_HOOK(StickWaitProc);
+    UNINSTALL_HOOK(SetSelectItemForce);
+    UNINSTALL_HOOK(KeyWaitProc);
+    UNINSTALL_HOOK(MidnaTalk);
     return MOD_OK;
 }
 }

@@ -151,11 +151,11 @@ void apply_state(mod_save_data state){
     mod_data = state;
 }
 
-static void makeBlob(ModContext* ctx) {
+static void makeBlob(ModContext* ctx, uint32_t slot, void* udata) {
     return;
 }
 
-static void loadBlob(ModContext* ctx) {
+static void loadBlob(ModContext* ctx, uint32_t slot, void* udata) {
     mod_save_data loaded{};
     size_t loadedSize = sizeof(loaded);
     if (svc_save->get_blob(mod_ctx, "mod_save_data", &loaded, &loadedSize) == MOD_OK &&
@@ -165,7 +165,10 @@ static void loadBlob(ModContext* ctx) {
     return;
 }
 
-static void storeBlob(ModContext* ctx) {
+static void storeBlob(ModContext* ctx, uint32_t slot, void* udata) {
+    char buf[25];
+    sprintf(buf, "blob: %d", sizeof(mod_data));
+    svc_log->info(mod_ctx, buf);
     svc_save->set_blob(mod_ctx, "mod_save_data", &mod_data, sizeof(mod_data));
     return;
 }

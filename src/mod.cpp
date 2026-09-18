@@ -105,10 +105,10 @@ void swapItems() {
 static void ring_checkDoSwapItems(ModContext*, void* args, void*, void*) {
     dMenu_Ring_c *pMenuRing = mods::arg<dMenu_Ring_c*>(args, 0);
     if (mDoCPd_c::getHoldR(PAD_1) && mDoCPd_c::getTrigZ(PAD_1)) {
-        /* mSelectItemSlideElapsed informs us if an equip animation is playing */
+        /* 0x674 informs us if an equip animation is playing */
         /* swapping sets while an item is moving can cause issues, so we cancel if it is. */
         for (int i = 0; i < 4; i++) {
-            if (pMenuRing->mSelectItemSlideElapsed[i] > 0.000001f) { 
+            if (pMenuRing->field_0x674[i] != 0 ) { 
                 return;
             }
         }

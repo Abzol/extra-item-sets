@@ -1,7 +1,7 @@
 {
-  "id": "st.fluffie.extrabuttons",
+  "id": "com.olivia.extrabuttons",
   "name": "Extra Buttons",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "author": "Olivia!!",
-  "description": "Adds a second set of equipped items, swappable to using R+Z."
+  "description": "Adds a second set of equippable items. Press R+Z to switch between your equipped sets."
 }

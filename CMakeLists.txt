@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.26)
 project(my_mod CXX)
 
-# The Dusklight version to build against: a release tag (e.g. "v1.5.0") or a commit SHA.
+# The Dusklight version to build against: a release tag (e.g. "v2.0.0") or a commit SHA.
 if (NOT DUSKLIGHT_VERSION)
-    set(DUSKLIGHT_VERSION "d281c34a65568ee7be2319985f3a290c0ef65abc")
+    set(DUSKLIGHT_VERSION "v2.0.0")
 endif ()
 # Fetches the Dusklight sources into ./dusklight and provides DUSKLIGHT_DIR.
 # Use -DDUSKLIGHT_DIR= to point at an existing Dusklight checkout.
